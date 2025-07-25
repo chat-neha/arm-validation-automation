@@ -1,0 +1,65 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "asece": {
+      "type": "string"
+    },
+    "osType": {
+      "type": "string"
+    },
+
+    "location": {
+      "type": "string",
+      "allowedValues": [
+
+      ]
+    },
+    "ASPName": {
+      "type": "string"
+    },
+    "AseName": {
+      "type": "string"
+    },
+    "PricingTier": {
+      "type": "string"
+    },
+    "Capac": {
+      "type": "int"
+    },
+    "AspCount": {
+      "type": "int"
+    }
+  },
+  "variables": {
+    "asergname": "[parameters('asece')]",
+    "reserved": "[equals(parameters('osType'),'Linux')]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2015-08-01",
+      "name": "[parameters('ASPName')]",
+      "type": "Microsoft.Web/serverfarms",
+      "location": "[parameters('location')]",
+      "kind": "[parameters('osType')]",
+      "properties": {
+        "hostingEnvironmentProfile": {
+          "id": "[resourceId(variables('asergname'), 'Microsoft.Web/hostingEnvironments', parameters('AseName') )]"
+        },
+        "reserved":"[variables('reserved')]"
+      },
+      "sku": {
+        "name": "[concat('I',parameters('PricingTier'))]",
+        "tier": "Isolated",
+        "size": "[concat('I',parameters('PricingTier'))]",
+        "family": "I",
+        "capacity": "[parameters('Capac')]"
+      },
+      "copy": {
+        "name": "CopyNumberOfASPs",
+        "count": "[parameters('AspCount')]"
+      }
+
+    }
+  ]
+}
